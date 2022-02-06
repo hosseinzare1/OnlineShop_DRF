@@ -1,0 +1,3 @@
+venv/
+__pycash__/
+db.sqlite3
