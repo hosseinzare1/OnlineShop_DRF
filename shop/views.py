@@ -4,23 +4,34 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 
-from shop.models import Product
-from shop.serializer import ModelProductSerializer
+from shop.models import Product, Image
+from shop.serializer import ModelProductSerializer, ModelImageSerializer
 
 
-@api_view(['GET'])
-def getAll(request):
-    query = Product.objects.all().order_by('-crate_date')
-    serializer = ModelProductSerializer(query, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+#
+# @api_view(['GET'])
+# def getAll(request):
+#     query = Product.objects.all().order_by('-crate_date')
+#     serializer = ModelProductSerializer(query, many=True)
+#     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class GetAllData(APIView):
+class GetAllProducts(APIView):
     def get(self, request):
         query = Product.objects.all()
         serializer = ModelProductSerializer(query, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
         # return Response(ModelProductSerializer(Product.objects.all(), many=True).data, status=status.HTTP_200_OK)
+
+
+class GetImages(APIView):
+    def get(self, request):
+        serializer = ModelImageSerializer(data=request.data)
+        product_id = serializer.initial_data.get("id")
+        query = Image.objects.filter(product=Product.objects.get(pk=product_id))
+
+        image_serializer = ModelImageSerializer(query, many=True, context={'request': request})
+        return Response(image_serializer.data, status=status.HTTP_200_OK)
 
 
 class GetFavData(APIView):
@@ -59,6 +70,7 @@ class Serach(APIView):
         search = request.GET['name']
         query = Product.objects.filter(name__contains=search)
         serializer = ModelProductSerializer(query, many=True)
+
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     # return Response(serializer.errors, status.HTTP_404_NOT_FOUND)
 

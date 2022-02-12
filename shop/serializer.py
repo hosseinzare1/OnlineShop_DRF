@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from shop import models
 
+
 #
 # class ProductSerializer(serializers.Serializer):
 #     name = serializers.CharField(max_length=100)
@@ -12,4 +13,10 @@ from shop import models
 class ModelProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
+        fields = '__all__'
+
+
+class ModelImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Image
         fields = '__all__'

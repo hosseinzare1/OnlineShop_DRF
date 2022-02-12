@@ -1,10 +1,12 @@
 from django.urls import path
-from shop.views import GetAllData, GetFavData, UpdateData, InsertProduct, Serach, Delete,getAll
+from shop.views import GetAllProducts, GetFavData, UpdateData, InsertProduct, Serach, Delete, GetImages
 
 urlpatterns = [
 
-    path('getall/', GetAllData.as_view()),
-    path('getalldef/', getAll),
+    path('getall/', GetAllProducts.as_view()),
+
+    path('get_images/', GetImages.as_view()),
+
     path('getfav/', GetFavData.as_view()),
     path('update/<int:key>', UpdateData.as_view()),
     path('insert/', InsertProduct.as_view()),
