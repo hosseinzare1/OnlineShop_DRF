@@ -34,13 +34,6 @@ class GetImages(APIView):
         return Response(image_serializer.data, status=status.HTTP_200_OK)
 
 
-class GetFavData(APIView):
-    def get(self, request):
-        query = Product.objects.filter(fav=True)
-        serializer = ModelProductSerializer(query, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class UpdateData(APIView):
     def get(self, request, key):
         query = Product.objects.get(pk=key)

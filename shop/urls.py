@@ -1,5 +1,5 @@
 from django.urls import path
-from shop.views import GetAllProducts, GetFavData, UpdateData, InsertProduct, Serach, Delete, GetImages
+from shop.views import GetAllProducts, UpdateData, InsertProduct, Serach, Delete, GetImages
 
 urlpatterns = [
 
@@ -7,7 +7,6 @@ urlpatterns = [
 
     path('get_images/', GetImages.as_view()),
 
-    path('getfav/', GetFavData.as_view()),
     path('update/<int:key>', UpdateData.as_view()),
     path('insert/', InsertProduct.as_view()),
     path('search/', Serach.as_view()),
