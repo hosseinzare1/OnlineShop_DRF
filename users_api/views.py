@@ -10,11 +10,8 @@ from users_api.models import User
 class Login(APIView):
     def post(self, request):
         serializers = UserModelSerializers(data=request.data)
-        #
         number = serializers.initial_data.get('number')
         password = serializers.initial_data.get('password')
-
-        # return Response(serializers.data, status=status.HTTP_3000_INCORRECT)
 
         if serializers.is_valid():
             query_number = User.objects.filter(number=number).count()
@@ -35,9 +32,7 @@ class Signup(APIView):
     def post(self, request):
         serializers = UserModelSerializers(data=request.data)
 
-        name = serializers.initial_data.get('name')
         number = serializers.initial_data.get('number')
-        password = serializers.initial_data.get('password')
 
         query_number = User.objects.filter(number=number).count()
 
