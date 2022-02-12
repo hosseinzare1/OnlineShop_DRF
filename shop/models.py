@@ -20,3 +20,6 @@ class Image(models.Model):
     id = models.AutoField(primary_key=True)
     imageUrl = models.ImageField(upload_to='images/', null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.imageUrl
