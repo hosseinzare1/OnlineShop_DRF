@@ -11,6 +11,15 @@ class ImageAdminMode(admin.ModelAdmin):
     list_display = ['id', 'product']
     search_fields = ['product']
 
+
+class OrderAdminMode(admin.ModelAdmin):
+    list_display = ['id', 'user']
+
+
+class OrderItemAdminMode(admin.ModelAdmin):
+    list_display = ['id', 'order', 'product']
+
+
 #
 # class SpecialDiscountAdminMode(admin.ModelAdmin):
 #     list_display = ['id', 'product', 'discount']
@@ -53,6 +62,9 @@ admin.site.register(models.Product, AdminMode)
 admin.site.register(models.Image, ImageAdminMode)
 # admin.site.register(models.SpecialDiscount, SpecialDiscountAdminMode)
 admin.site.register(models.Comments, CommentAdminMode)
+
+admin.site.register(models.Order, OrderAdminMode)
+admin.site.register(models.OrderItem, OrderItemAdminMode)
 
 admin.site.register(models.Attribute, AttributeAdminMode)
 admin.site.register(models.AttributeValue, AttributeValueAdminMode)

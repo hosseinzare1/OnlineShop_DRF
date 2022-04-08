@@ -9,11 +9,34 @@ from shop import models
 #     image = serializers.ImageField(use_url=True, null=True)
 #     fav = serializers.CharField(max_length=2)
 
+class OrderItemModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.OrderItem
+        fields = "__all__"
+
+
+class OrderModelSerializer(serializers.ModelSerializer):
+    # tracks = TrackSerializer(many=True)
+    order_items = OrderItemModelSerializer(many=True)
+
+    class Meta:
+        model = models.Order
+        fields = ["id", "user", "state", "trackingNumber", 'order_items']
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('order_items')
+        order = models.Order.objects.create(**validated_data)
+        for item in items_data:
+            models.OrderItem.objects.create(order=order, **item)
+        return order
+
 
 class ProductModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
-        fields = '__all__'
+        fields = ['id', 'name', 'description', 'imageUrl', 'price', 'discount', 'specialDiscount', 'crate_date',
+                  'category', 'inventory']
+
 
 #
 # class SpecialDiscountModelSerializer(serializers.ModelSerializer):

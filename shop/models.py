@@ -31,7 +31,6 @@ class Product(models.Model):
     description = models.TextField(null=True)
     imageUrl = models.ImageField(upload_to='images/', null=True)
     price = models.CharField(max_length=16, blank=True)
-    fav = models.BooleanField()
     discount = models.IntegerField(default=0, validators=[
         MaxValueValidator(100),
         MinValueValidator(1)
@@ -41,8 +40,37 @@ class Product(models.Model):
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
 
+    inventory = models.IntegerField(null=True)
+
+    # These two fields are not serialized
+    initial_inventory = models.IntegerField(null=True)
+    Number_of_items_sold = models.IntegerField(null=True)
+
     def __str__(self):
         return self.name
+
+
+class Order(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, to_field='number', null=True)
+
+    class Situations(models.Choices):
+        AwaitingPayment = 1
+        Processing = 2
+        Delivered_to_the_post_office = 3
+
+    state = models.IntegerField(choices=Situations.choices, default=1)
+    trackingNumber = models.IntegerField(default=1)
+
+
+class OrderItem(models.Model):
+    id = models.AutoField(primary_key=True)
+    order = models.ForeignKey(Order, related_name="order_items", on_delete=models.CASCADE, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    unit_price = models.IntegerField(default=1)
+    unit_discount = models.IntegerField(default=1)
+
 
 #
 # class SpecialDiscount(models.Model):

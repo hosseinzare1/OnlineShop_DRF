@@ -1,7 +1,7 @@
 from django.urls import path
 from shop.views import GetAllProducts, UpdateData, InsertProduct, Delete, GetImages, GetProduct, GetGroups, \
     GetCategorys, GetProductAttributes, GetProductsByCategory, Search, GetComments, SubmitComment, GetSameProducts, \
-    GetSpecialDiscount
+    GetSpecialDiscount, SubmitOrder
 
 urlpatterns = [
 
@@ -12,6 +12,7 @@ urlpatterns = [
     path('get_images/<int:key>', GetImages.as_view()),
     path('get_comments/<int:key>', GetComments.as_view()),
     path('submit_comment/', SubmitComment.as_view()),
+    path('submit_order/', SubmitOrder.as_view()),
     path('get_special_discounts/', GetSpecialDiscount.as_view()),
 
     path('get_groups/', GetGroups.as_view()),

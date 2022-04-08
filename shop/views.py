@@ -1,25 +1,52 @@
+import json
+
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
-
+from types import SimpleNamespace
 from shop.models import Product, Image, Group, Category, Comments, Attribute, AttributeValue, ProductAttribute
 from shop.serializer import ProductModelSerializer, ImageModelSerializer, GroupModelSerializer, \
     CategoryModelSerializer, AttributesModelSerializer, AttributesValueModelSerializer, \
-    ProductsAttributesModelSerializer, CommentModelSerializer
+    ProductsAttributesModelSerializer, CommentModelSerializer, OrderModelSerializer
+
+
+class SubmitOrder(APIView):
+    def post(self, request):
+        serializer = OrderModelSerializer(data=request.data)
+        # x = json.loads(request.data, object_hook=lambda d: SimpleNamespace(**d))
+        # # request.data
+        # items = x.items
+        # request.data
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SubmitComment(APIView):
+    def post(self, request):
+        serializer = CommentModelSerializer(data=request.data)
+        # serializer.data.
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Search(APIView):
     def get(self, request, search_text):
-        query = Product.objects.filter(name__contains=search_text)
+        query = Product.objects.filter(name__contains=search_text, inventory__gt=0)
         serializer = ProductModelSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class GetProductAttributes(APIView):
     def get(self, request, product_key):
-        query = ProductAttribute.objects.filter(product_id=product_key)
+        query = Product.objects.get().productattribute_set.all()
+        # ProductAttribute.objects.filter(product_id=product_key)
         serializer = ProductsAttributesModelSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -40,7 +67,7 @@ class GetCategorys(APIView):
 
 class GetSpecialDiscount(APIView):
     def get(self, request):
-        query = Product.objects.filter(specialDiscount=True)
+        query = Product.objects.filter(specialDiscount=True, inventory__gt=0)
         serializer = ProductModelSerializer(query, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -54,7 +81,7 @@ class GetSpecialDiscount(APIView):
 
 class GetProductsByCategory(APIView):
     def get(self, request, category_id):
-        query = Product.objects.filter(category_id=category_id)
+        query = Product.objects.filter(category_id=category_id, inventory__gt=0)
         serializer = ProductModelSerializer(query, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
         # return Response(ModelProductSerializer(Product.objects.all(), many=True).data, status=status.HTTP_200_OK)
@@ -62,8 +89,8 @@ class GetProductsByCategory(APIView):
 
 class GetSameProducts(APIView):
     def get(self, request, product_id):
-        ##TODO Change the way similar products are offered
-        query = Product.objects.filter(category_id=Product.objects.get(pk=product_id).category_id)
+        # TODO Change the way similar products are offered
+        query = Product.objects.filter(category_id=Product.objects.get(pk=product_id).category_id, inventory__gt=0)
         serializer = ProductModelSerializer(query, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
         # return Response(ModelProductSerializer(Product.objects.all(), many=True).data, status=status.HTTP_200_OK)
@@ -71,7 +98,7 @@ class GetSameProducts(APIView):
 
 class GetAllProducts(APIView):
     def get(self, request):
-        query = Product.objects.all()
+        query = Product.objects.filter(inventory__gt=0)
         serializer = ProductModelSerializer(query, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
         # return Response(ModelProductSerializer(Product.objects.all(), many=True).data, status=status.HTTP_200_OK)
@@ -98,15 +125,6 @@ class GetComments(APIView):
         query = Comments.objects.filter(product_id=key)
         serializer = CommentModelSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class SubmitComment(APIView):
-    def post(self, request):
-        serializer = CommentModelSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(status=status.HTTP_200_OK)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateData(APIView):
