@@ -65,9 +65,16 @@ class GetCategorys(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class GetSpecialDiscount(APIView):
+class GetSpecialDiscounts(APIView):
     def get(self, request):
         query = Product.objects.filter(specialDiscount=True, inventory__gt=0)
+        serializer = ProductModelSerializer(query, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetBestselling(APIView):
+    def get(self, request):
+        query = Product.objects.all().order_by('Number_of_items_sold')[:10]
         serializer = ProductModelSerializer(query, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 

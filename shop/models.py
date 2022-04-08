@@ -33,7 +33,7 @@ class Product(models.Model):
     price = models.CharField(max_length=16, blank=True)
     discount = models.IntegerField(default=0, validators=[
         MaxValueValidator(100),
-        MinValueValidator(1)
+        MinValueValidator(0)
     ])
     specialDiscount = models.BooleanField(default=False)
     crate_date = models.DateTimeField(default=datetime.now)
