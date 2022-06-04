@@ -2,6 +2,9 @@ from rest_framework import serializers
 from shop import models
 
 
+# from django_jalali.serializers.serializerfield import JDateTimeField
+
+
 #
 # class ProductSerializer(serializers.Serializer):
 #     name = serializers.CharField(max_length=100)
@@ -21,7 +24,7 @@ class OrderModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Order
-        fields = ["id", "user", "state", "trackingNumber", 'order_items']
+        fields = ["id", "user", "state", "trackingNumber", 'order_items', 'submit_time', 'submit_date']
 
     def create(self, validated_data):
         items_data = validated_data.pop('order_items')
@@ -32,10 +35,21 @@ class OrderModelSerializer(serializers.ModelSerializer):
 
 
 class ProductModelSerializer(serializers.ModelSerializer):
+    # date_time = JDateTimeField()
+
     class Meta:
         model = models.Product
         fields = ['id', 'name', 'description', 'imageUrl', 'price', 'discount', 'specialDiscount', 'crate_date',
-                  'category', 'inventory']
+                  'category', 'group', 'inventory']
+
+    def create(self, validated_data):
+        product = models.Product.objects.create(**validated_data)
+
+        group = product.group
+        group.count = group.count + 1
+        group.save()
+
+        return product
 
 
 #

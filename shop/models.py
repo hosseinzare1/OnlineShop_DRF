@@ -3,13 +3,16 @@ from django.db import models
 from datetime import datetime
 from users_api.models import User
 
+from django_jalali.db import models as jmodels
+
 
 # Create your models here.
 # Group -> Category -> Product -> Image
 
 class Group(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, unique=True)
+    count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -17,9 +20,10 @@ class Group(models.Model):
 
 class Category(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, unique=True)
     image_url = models.ImageField(upload_to='images/', null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
+    count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -27,18 +31,22 @@ class Category(models.Model):
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.TextField(null=True)
     imageUrl = models.ImageField(upload_to='images/', null=True)
     price = models.CharField(max_length=16, blank=True)
     discount = models.IntegerField(default=0, validators=[
-        MaxValueValidator(100),
+        MaxValueValidator(99),
         MinValueValidator(0)
     ])
     specialDiscount = models.BooleanField(default=False)
     crate_date = models.DateTimeField(default=datetime.now)
-
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
+    # date_time = jmodels.jDateTimeField(null=True, auto_now_add=True)
+    group = models.ForeignKey(Group, to_field='name', related_name='products', on_delete=models.CASCADE, null=True,
+                              blank=True)
+    category = models.ForeignKey(Category, to_field='name', related_name='products', on_delete=models.CASCADE,
+                                 null=True,
+                                 blank=True)
 
     inventory = models.IntegerField(null=True)
 
@@ -62,11 +70,23 @@ class Order(models.Model):
     state = models.IntegerField(choices=Situations.choices, default=1)
     trackingNumber = models.IntegerField(default=1)
 
+    submit_time = models.CharField(max_length=16, null=True)
+    submit_date = models.CharField(max_length=16, null=True)
+
+    gregorianDataTime = models.DateTimeField(auto_now_add=True, null=True)
+
+    totalPrice = models.IntegerField(null=True)
+
+    transferee_name = models.CharField(max_length=64, null=True)
+    transferee_number = models.CharField(max_length=16, null=True)
+    transferee_address = models.TextField(null=True)
+
 
 class OrderItem(models.Model):
     id = models.AutoField(primary_key=True)
     order = models.ForeignKey(Order, related_name="order_items", on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
     quantity = models.IntegerField(default=1)
     unit_price = models.IntegerField(default=1)
     unit_discount = models.IntegerField(default=1)
@@ -93,6 +113,11 @@ class Comments(models.Model):
     title = models.CharField(max_length=128)
     text = models.TextField()
 
+    submit_time = models.CharField(max_length=16, null=True)
+    submit_date = models.CharField(max_length=16, null=True)
+
+    gregorianDataTime = models.DateTimeField(auto_now_add=True, null=True)
+
     class score(models.IntegerChoices):
         one = 1
         two = 2
@@ -102,7 +127,7 @@ class Comments(models.Model):
 
     rating = models.IntegerField(choices=score.choices)
 
-    user_number = models.ForeignKey(User, on_delete=models.CASCADE, to_field="number", null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, to_field="number", null=True, blank=True)
     user_name = models.CharField(max_length=64)
 
 

@@ -22,7 +22,7 @@ class UpdateAccount(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.data, status=status.HTTP_220_DATA_NOT_VALID)
+        return Response(serializer.errors, status=status.HTTP_220_DATA_NOT_VALID)
 
 
 class Login(APIView):
@@ -53,13 +53,13 @@ class Signup(APIView):
         number = serializers.initial_data.get('number')
 
         query_number = User.objects.filter(number=number).count()
-
-        if serializers.is_valid():
-            if query_number == 0:
+        if query_number == 0:
+            if serializers.is_valid():
                 serializers.save()
                 return Response(serializers.data, status=status.HTTP_211_SIGNUP_SUCCESSFUL)
             else:
-                return Response(serializers.errors, status=status.HTTP_210_ACCOUNT_EXIST)
+                return Response(serializers.errors, status=status.HTTP_220_DATA_NOT_VALID)
         else:
-            return Response(serializers.errors, status=status.HTTP_220_DATA_NOT_VALID)
-# Create your views here.
+            return Response(serializers.errors, status=status.HTTP_210_ACCOUNT_EXIST)
+
+    # Create your views here.

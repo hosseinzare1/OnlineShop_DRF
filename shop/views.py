@@ -6,10 +6,32 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from types import SimpleNamespace
-from shop.models import Product, Image, Group, Category, Comments, Attribute, AttributeValue, ProductAttribute
+from shop.models import Product, Image, Group, Category, Comments, Attribute, AttributeValue, ProductAttribute, Order, \
+    OrderItem, User
 from shop.serializer import ProductModelSerializer, ImageModelSerializer, GroupModelSerializer, \
     CategoryModelSerializer, AttributesModelSerializer, AttributesValueModelSerializer, \
     ProductsAttributesModelSerializer, CommentModelSerializer, OrderModelSerializer
+
+
+class GetOrders(APIView):
+    def get(self, request, user_number):
+        query = Order.objects.filter(user=User.objects.get(number=user_number))
+        serializer = OrderModelSerializer(query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetOrderDetails(APIView):
+    def get(self, request, order_id):
+        query = Order.objects.get(id=order_id)
+        serializer = OrderModelSerializer(query)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetUserComments(APIView):
+    def get(self, request, user_number):
+        query = Comments.objects.filter(user=user_number)
+        serializer = CommentModelSerializer(query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SubmitOrder(APIView):
@@ -23,7 +45,7 @@ class SubmitOrder(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_200_OK)
 
 
 class SubmitComment(APIView):
@@ -32,8 +54,25 @@ class SubmitComment(APIView):
         # serializer.data.
         if serializer.is_valid():
             serializer.save()
-            return Response(status=status.HTTP_200_OK)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_200_OK)
+
+
+class DeleteComment(APIView):
+    def post(self, request, key):
+        query = Comments.objects.get(pk=key)
+        query.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class EditComment(APIView):
+    def put(self, request, key):
+        query = Comments.objects.get(pk=key)
+        serializer = CommentModelSerializer(query, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Search(APIView):
@@ -45,7 +84,7 @@ class Search(APIView):
 
 class GetProductAttributes(APIView):
     def get(self, request, product_key):
-        query = Product.objects.get().productattribute_set.all()
+        query = Product.objects.get(id=product_key).productattribute_set.all()
         # ProductAttribute.objects.filter(product_id=product_key)
         serializer = ProductsAttributesModelSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -54,6 +93,11 @@ class GetProductAttributes(APIView):
 class GetGroups(APIView):
     def get(self, request):
         query = Group.objects.all()
+
+        # This method is not optimal and should be replaced
+        for item in query:
+            item.count = item.products.count()
+            item.save()
         serializer = GroupModelSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -61,6 +105,11 @@ class GetGroups(APIView):
 class GetCategorys(APIView):
     def get(self, request, group_key):
         query = Category.objects.filter(group=Group.objects.get(pk=group_key))
+
+        # This method is not optimal and should be replaced
+        for item in query:
+            item.count = item.products.count()
+            item.save()
         serializer = CategoryModelSerializer(query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -87,8 +136,16 @@ class GetBestselling(APIView):
 
 
 class GetProductsByCategory(APIView):
-    def get(self, request, category_id):
-        query = Product.objects.filter(category_id=category_id, inventory__gt=0)
+    def get(self, request, category):
+        query = Product.objects.filter(category=category, inventory__gt=0)
+        serializer = ProductModelSerializer(query, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # return Response(ModelProductSerializer(Product.objects.all(), many=True).data, status=status.HTTP_200_OK)
+
+
+class GetProductsByGroup(APIView):
+    def get(self, request, group):
+        query = Product.objects.filter(group=group, inventory__gt=0)
         serializer = ProductModelSerializer(query, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
         # return Response(ModelProductSerializer(Product.objects.all(), many=True).data, status=status.HTTP_200_OK)
@@ -97,7 +154,8 @@ class GetProductsByCategory(APIView):
 class GetSameProducts(APIView):
     def get(self, request, product_id):
         # TODO Change the way similar products are offered
-        query = Product.objects.filter(category_id=Product.objects.get(pk=product_id).category_id, inventory__gt=0)
+        query = Product.objects.filter(category_id=Product.objects.get(id=product_id).category_id,
+                                       inventory__gt=0).exclude(id=product_id)
         serializer = ProductModelSerializer(query, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
         # return Response(ModelProductSerializer(Product.objects.all(), many=True).data, status=status.HTTP_200_OK)
