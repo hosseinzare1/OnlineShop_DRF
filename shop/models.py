@@ -1,9 +1,10 @@
+from unicodedata import name
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from datetime import datetime
 from users_api.models import User
 
-from django_jalali.db import models as jmodels
+# from django_jalali.db import models as jmodels
 
 
 # Create your models here.
@@ -63,7 +64,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, to_field='number', null=True)
 
     class Situations(models.Choices):
-        AwaitingPayment = 1
+        Registered = 1
         Processing = 2
         Delivered_to_the_post_office = 3
 
@@ -86,6 +87,9 @@ class OrderItem(models.Model):
     id = models.AutoField(primary_key=True)
     order = models.ForeignKey(Order, related_name="order_items", on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    
+    name = models.CharField(max_length=100,null=True)
+    imageUrl = models.CharField(max_length=256, null=True)
 
     quantity = models.IntegerField(default=1)
     unit_price = models.IntegerField(default=1)
@@ -106,6 +110,13 @@ class Image(models.Model):
     def __str__(self):
         return self.imageUrl.name
 
+
+class NewsImage(models.Model):
+    id = models.AutoField(primary_key=True)
+    imageUrl = models.ImageField(upload_to='news_images/', null=True, blank=True)
+
+    def __str__(self):
+        return self.imageUrl.name
 
 class Comments(models.Model):
     id = models.AutoField(primary_key=True)

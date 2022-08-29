@@ -2,10 +2,11 @@ from django.urls import path
 from shop.views import GetAllProducts, UpdateData, InsertProduct, Delete, GetImages, GetProduct, GetGroups, \
     GetCategorys, GetProductAttributes, GetProductsByCategory, Search, GetComments, SubmitComment, GetSameProducts, \
     GetSpecialDiscounts, GetBestselling, SubmitOrder, GetProductsByGroup, GetOrders, GetUserComments, GetOrderDetails, \
-    EditComment, DeleteComment
+    EditComment, DeleteComment,GetNewsImages
 
 urlpatterns = [
 
+    path('get_news_images/', GetNewsImages.as_view()),
     path('get_all/', GetAllProducts.as_view()),
     path('get_products_by_category/<str:category>', GetProductsByCategory.as_view()),
     path('get_products_by_group/<str:group>', GetProductsByGroup.as_view()),

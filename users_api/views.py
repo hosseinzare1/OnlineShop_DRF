@@ -37,7 +37,9 @@ class Login(APIView):
             query_number_password = User.objects.filter(number=number, password=password).count()
             if query_number_password > 0:
                 # serializers.save()
-                return Response(serializers.data, status=status.HTTP_212_LOGIN_SUCCESSFUL)
+                query = User.objects.get(number=number)
+                userSerializer = UserModelSerializers(query)
+                return Response(userSerializer.data, status=status.HTTP_212_LOGIN_SUCCESSFUL)
             else:
                 return Response(serializers.data, status=status.HTTP_214_PASSWORD_WRONG)
         else:

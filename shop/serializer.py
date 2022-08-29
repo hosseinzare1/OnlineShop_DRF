@@ -24,7 +24,18 @@ class OrderModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Order
-        fields = ["id", "user", "state", "trackingNumber", 'order_items', 'submit_time', 'submit_date']
+        fields = [
+        "id",
+        "user",
+        
+        "state",
+        "trackingNumber",
+
+        "order_items","totalPrice",        
+        "submit_time","submit_date",
+
+        "transferee_name","transferee_number","transferee_address",
+        ]
 
     def create(self, validated_data):
         items_data = validated_data.pop('order_items')
@@ -63,9 +74,15 @@ class ImageModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Image
         fields = '__all__'
+        
+class NewsImageModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.NewsImage
+        fields = '__all__'
 
 
 class CommentModelSerializer(serializers.ModelSerializer):
+  ##  product = ProductModelSerializer(many=False)
     class Meta:
         model = models.Comments
         fields = '__all__'

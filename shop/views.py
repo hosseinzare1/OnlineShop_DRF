@@ -1,4 +1,6 @@
 import json
+import logging
+from math import fabs
 
 from django.shortcuts import render
 from rest_framework.response import Response
@@ -6,9 +8,9 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from types import SimpleNamespace
-from shop.models import Product, Image, Group, Category, Comments, Attribute, AttributeValue, ProductAttribute, Order, \
+from shop.models import NewsImage, Product, Image, Group, Category, Comments, Attribute, AttributeValue, ProductAttribute, Order, \
     OrderItem, User
-from shop.serializer import ProductModelSerializer, ImageModelSerializer, GroupModelSerializer, \
+from shop.serializer import NewsImageModelSerializer, ProductModelSerializer, ImageModelSerializer, GroupModelSerializer, \
     CategoryModelSerializer, AttributesModelSerializer, AttributesValueModelSerializer, \
     ProductsAttributesModelSerializer, CommentModelSerializer, OrderModelSerializer
 
@@ -45,14 +47,17 @@ class SubmitOrder(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_226_IM_USED)
 
 
 class SubmitComment(APIView):
     def post(self, request):
         serializer = CommentModelSerializer(data=request.data)
         # serializer.data.
+  
         if serializer.is_valid():
+            logger = logging.getLogger(__name__)
+            logger.error(serializer.validated_data)
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(data=serializer.errors, status=status.HTTP_200_OK)
@@ -61,8 +66,11 @@ class SubmitComment(APIView):
 class DeleteComment(APIView):
     def post(self, request, key):
         query = Comments.objects.get(pk=key)
+        serializer = CommentModelSerializer(query,many=False)
         query.delete()
-        return Response(status=status.HTTP_200_OK)
+    
+        return Response(data=serializer.data,status=status.HTTP_200_OK)
+
 
 
 class EditComment(APIView):
@@ -110,7 +118,7 @@ class GetCategorys(APIView):
         for item in query:
             item.count = item.products.count()
             item.save()
-        serializer = CategoryModelSerializer(query, many=True)
+        serializer = CategoryModelSerializer(query, many=True,context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -184,6 +192,12 @@ class GetImages(APIView):
         image_serializer = ImageModelSerializer(query, many=True, context={'request': request})
         return Response(image_serializer.data, status=status.HTTP_200_OK)
 
+class GetNewsImages(APIView):
+    def get(self, request):
+        # serializer = ModelImageSerializer(data=request.data)
+        query = NewsImage.objects.all()
+        news_image_serializer = NewsImageModelSerializer(query, many=True, context={'request': request})
+        return Response(news_image_serializer.data, status=status.HTTP_200_OK)
 
 class GetComments(APIView):
     def get(self, request, key):

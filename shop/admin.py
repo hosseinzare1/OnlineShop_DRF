@@ -3,7 +3,7 @@ from shop import models
 
 
 class AdminMode(admin.ModelAdmin):
-    list_display = ['name', 'imageUrl']
+    list_display = ['id','name', 'imageUrl']
     search_fields = ['name']
 
 
@@ -11,6 +11,8 @@ class ImageAdminMode(admin.ModelAdmin):
     list_display = ['id', 'product']
     search_fields = ['product']
 
+class NewsImageAdminMode(admin.ModelAdmin):
+    list_display = ['id','imageUrl']
 
 class OrderAdminMode(admin.ModelAdmin):
     list_display = ['id', 'user']
@@ -60,6 +62,7 @@ admin.site.register(models.Group, GroupAdminMode)
 admin.site.register(models.Category, CategoryAdminMode)
 admin.site.register(models.Product, AdminMode)
 admin.site.register(models.Image, ImageAdminMode)
+admin.site.register(models.NewsImage, NewsImageAdminMode)
 # admin.site.register(models.SpecialDiscount, SpecialDiscountAdminMode)
 admin.site.register(models.Comments, CommentAdminMode)
 
