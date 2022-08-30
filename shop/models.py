@@ -4,12 +4,6 @@ from django.db import models
 from datetime import datetime
 from users_api.models import User
 
-# from django_jalali.db import models as jmodels
-
-
-# Create your models here.
-# Group -> Category -> Product -> Image
-
 class Group(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=64, unique=True)
@@ -42,7 +36,6 @@ class Product(models.Model):
     ])
     specialDiscount = models.BooleanField(default=False)
     crate_date = models.DateTimeField(default=datetime.now)
-    # date_time = jmodels.jDateTimeField(null=True, auto_now_add=True)
     group = models.ForeignKey(Group, to_field='name', related_name='products', on_delete=models.CASCADE, null=True,
                               blank=True)
     category = models.ForeignKey(Category, to_field='name', related_name='products', on_delete=models.CASCADE,
