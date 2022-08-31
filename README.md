@@ -6,7 +6,8 @@ An online shop server side that implemented with django rest freamwork.
 
 **This project is made for learning purpose and some codes and methods used are not implemented in the correct way** 
 
-
+# UML Diagram
+![UML](https://github.com/hosseinzare1/OnlineShop_DRF/blob/master/UML.png)
 # API Reference
 
 ## Products list
