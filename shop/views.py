@@ -136,13 +136,6 @@ class GetBestselling(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# @api_view(['GET'])
-# def getAll(request):
-#     query = Product.objects.all().order_by('-crate_date')
-#     serializer = ModelProductSerializer(query, many=True)
-#     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class GetProductsByCategory(APIView):
     def get(self, request, category):
         query = Product.objects.filter(category=category, inventory__gt=0)
@@ -228,17 +221,6 @@ class InsertProduct(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
-
-
-#
-# class Serach(APIView):
-#     def get(self, request):
-#         search = request.GET['name']
-#         query = Product.objects.filter(name__contains=search)
-#         serializer = ProductModelSerializer(query, many=True)
-#
-#         return Response(data=serializer.data, status=status.HTTP_200_OK)
-#     # return Response(serializer.errors, status.HTTP_404_NOT_FOUND)
 
 
 class Delete(APIView):
