@@ -13,25 +13,25 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 1. Get products with special discounts
 
-```http
+```
   GET /api/v1/get_special_discounts/
 ```
 
 ### 2. Get bestselling products
 
-```http
+```
   GET /api/v1/get_bestselling/
 ```
 
 ### 3. Get groups
 
-```http
+```
   GET /api/v1/groups/
 ```
 
 ### 4. Get categories
 
-```http
+```
   GET /api/v1/categories/{group_id}
 ```
 
@@ -42,7 +42,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 5. Get products of a specific category
 
-```http
+```
   GET /api/v1/get_products_by_category/{category}
 ```
 
@@ -53,7 +53,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 6. Get products of a specific group
 
-```http
+```
   GET /api/v1/get_products_by_group/{group}
 ```
 
@@ -67,7 +67,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 1. Get product detail
 
-```http
+```
   GET /api/v1/get_product/{id}
 ```
 
@@ -78,7 +78,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 2. Get product images
 
-```http
+```
   GET /api/v1/get_images/{id}
 ```
 
@@ -89,7 +89,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 3. Get product comments
 
-```http
+```
   GET /api/v1/get_comments/{id}
 ```
 
@@ -101,7 +101,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 4. Get product attributes
 
-```http
+```
   GET /api/v1/get_product_attributes/{id}
 ```
 
@@ -116,7 +116,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 1. Get all comments of a user
 
-```http
+```
   GET /api/v1/get_user_comments/{user_number}
 ```
 
@@ -128,7 +128,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 2. Submit comment
 
-```http
+```
   Post /api/v1/submit_comment/
 ```
 
@@ -138,7 +138,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 3. Delete comments
 
-```http
+```
   POST /api/v1/delete_comment/{id}
 ```
 
@@ -149,7 +149,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 4. Edit comment
 
-```http
+```
   POST /api/v1/edit_comment/{id}
 ```
 
@@ -164,7 +164,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 1. Submit Order
 
-```http
+```
   POST /api/v1/submit_comment/
 ```
 
@@ -175,7 +175,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 2. Get orders of a user
 
-```http
+```
   GET /api/v1/get_orders/{user_number}
 ```
 
@@ -186,7 +186,7 @@ An online shop server side that implemented with django rest freamwork.
 
 ### 3. Get order detail
 
-```http
+```
   GET /api/v1/get_order_details/{order_id}
 ```
 
